@@ -1,6 +1,5 @@
 {
     "name": "ht7/ht7-kernel",
-    "version": "0.1",
     "license": "APACHE 2.0",
     "description": "PHP wrapper to run application in a well defined environment",
     "type": "library",
