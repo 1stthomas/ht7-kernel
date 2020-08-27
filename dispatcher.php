@@ -4,6 +4,10 @@ if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'vendor')) {
     $dirVendor = __DIR__ . DIRECTORY_SEPARATOR . 'vendor';
 } elseif (file_exists(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor')) {
     $dirVendor = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor';
+} elseif (file_exists(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor')) {
+    $dirVendor = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor';
+} elseif (file_exists(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor')) {
+    $dirVendor = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor';
 } else {
     throw new RuntimeException('Missing valid vendor folder.');
 }
@@ -12,9 +16,11 @@ if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'vendor')) {
  */
 $loader = require $dirVendor . DIRECTORY_SEPARATOR . 'autoload.php';
 
-use \Ht7\CmsSimple\Kernel\Kernel;
+use \Ht7\Kernel\Kernel;
 
 $kernel = new Kernel(__DIR__, $dirVendor);
+
+unset($dirVendor);
 
 echo "<hr>";
 echo "<p>";
@@ -33,16 +39,6 @@ if (is_object($c)) {
     print_r($c);
     echo "</pre>";
 }
-
-echo "<hr>";
-printStructure($_ENV);
-echo "<hr>";
-if (isset($argc)) {
-    printLine('Anzahl Argumente: ' . $argc);
-    printStructure($argv);
-}
-
-getCNew();
 
 echo "<hr>";
 echo "<h4>Stats:</h4>";

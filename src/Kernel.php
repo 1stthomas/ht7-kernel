@@ -2,14 +2,14 @@
 
 namespace Ht7\Kernel;
 
-use \Ht7\CmsSimple\Kernel\ProcessStatus;
-use \Ht7\CmsSimple\Kernel\Container;
-use \Ht7\CmsSimple\Kernel\Tasks\AnalyseEnvironmentTask;
-use \Ht7\CmsSimple\Kernel\Tasks\AnalyseFolderStructureTask;
-use \Ht7\CmsSimple\Kernel\Tasks\CreateCmsContainerTask;
-use \Ht7\CmsSimple\Kernel\Tasks\FixPhpEnvironmentTask;
-use \Ht7\CmsSimple\Kernel\Tasks\ReadConfigTask;
-use \Ht7\CmsSimple\Kernel\Tasks\SetupTaskListTask;
+use \Ht7\Kernel\KernelStatus;
+use \Ht7\Kernel\Container;
+use \Ht7\Kernel\Tasks\AnalyseEnvironmentTask;
+use \Ht7\Kernel\Tasks\AnalyseFolderStructureTask;
+use \Ht7\Kernel\Tasks\CreateCmsContainerTask;
+use \Ht7\Kernel\Tasks\FixPhpEnvironmentTask;
+use \Ht7\Kernel\Tasks\ReadConfigTask;
+use \Ht7\Kernel\Tasks\SetupTaskListTask;
 
 /**
  * Description of Dispatcher
@@ -28,12 +28,53 @@ class Kernel
     protected $status;
     protected $taskList;
 
-    public function __construct(string $dirCaller, string $dirVendor)
+    public function __construct(string $dirCaller, string $dirVendor = '')
     {
         $this->setDirCaller($dirCaller);
         $this->setDirVendor($dirVendor);
 
         $this->boot();
+    }
+
+    public function boot()
+    {
+        $this->setStatus(ProcessStatus::INITIALISED);
+
+        // determine the dir of the index file.
+        list($scriptPath) = get_included_files();
+        $fileName = basename($scriptPath);
+        $dirIndexFile = rtrim($scriptPath, DIRECTORY_SEPARATOR . $fileName);
+
+        $container = Container::getInstance();
+        $container->addPlain('paths.index', $dirIndexFile);
+//        $container->addPlain('paths.index', getcwd());
+        $container->addPlain('paths.dispatcher', $this->getDirCaller());
+        if ($this->isInstalled()) {
+            $this->setStatus(KernelStatus::RUN_KERNEL_TASKS);
+
+            // Startup tasks. These can not be changed by config.
+            $this->setStatus((new FixPhpEnvironmentTask('', $container))->process());
+            $this->setStatus((new AnalyseEnvironmentTask('', $container))->process());
+            $this->setStatus((new AnalyseFolderStructureTask('', $container))->process());
+            $this->setStatus((new ReadConfigTask('', $container))->process());
+            $this->setStatus((new CreateCmsContainerTask('', $container))->process());
+            $this->setStatus((new SetupTaskListTask('', $container))->process());
+
+            $ktL = $container->get('instances.kernel_tasklist');
+
+            foreach ($ktL as $task) {
+                if ($task->getType() !== 'startup') {
+                    $this->setStatus($task->process());
+                }
+            }
+        } else {
+            // Install the kernel.
+            $this->setStatus(KernelStatus::INSTALL_KERNEL);
+
+            $this->setStatus((new FixPhpEnvironmentTask('', $container))->process());
+        }
+
+        $this->setStatus('shutdown');
     }
 
     public function getDirCaller()
@@ -51,32 +92,11 @@ class Kernel
         return $this->status;
     }
 
-    public function boot()
+    public function isInstalled()
     {
-        // Hier ueber eine Taskliste gehen?
-        $this->setStatus(ProcessStatus::INITIALISED);
+        return stristr($this->getDirCaller(), $this->getDirVendor());
 
-        $container = Container::getInstance();
-        $container->addPlain('paths.index', getcwd());
-        $container->addPlain('paths.dispatcher', $this->getDirCaller());
-
-        // Startup tasks. These can not be changed by config.
-        $this->setStatus((new FixPhpEnvironmentTask('', $container))->process());
-        $this->setStatus((new AnalyseEnvironmentTask('', $container))->process());
-        $this->setStatus((new AnalyseFolderStructureTask('', $container))->process());
-        $this->setStatus((new ReadConfigTask('', $container))->process());
-        $this->setStatus((new CreateCmsContainerTask('', $container))->process());
-        $this->setStatus((new SetupTaskListTask('', $container))->process());
-
-        $ktL = $container->get('instances.kernel_tasklist');
-
-        foreach ($ktL as $task) {
-            if ($task->getType() !== 'startup') {
-                $this->setStatus($task->process());
-            }
-        }
-
-        $this->setStatus('shutdown');
+//        return !empty($this->getDirVendor());
     }
 
     protected function setDirCaller($dirCaller)
