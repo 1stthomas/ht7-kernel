@@ -38,7 +38,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/1stthomas/ht7-kernel"
+            "url": "https://github.com/1stthomas/ht7-base"
         }
     ],
     "require": {
@@ -51,8 +51,6 @@
     "require-dev": {
         "phpunit/phpunit": "^7.0"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "scripts": {
         "test": ".\\vendor\\bin\\phpunit --configuration .\\tests\\configuration.xml --colors --testdox",
         "test-unit": "php .\\vendor\\phpunit\\phpunit\\phpunit --colors --bootstrap .\\tests\\bootstrap.php --configuration .\\tests\\configuration.xml --testsuite \"ht7 kernel - unit\"",
