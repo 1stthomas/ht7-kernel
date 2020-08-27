@@ -41,8 +41,7 @@
     },
     "source": {
         "url": "https://github.com/1stthomas/ht7-kernel.git",
-        "type": "git",
-        "reference": "0.1"
+        "type": "git"
     },
     "repositories": [
         {
