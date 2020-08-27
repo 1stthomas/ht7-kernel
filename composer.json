@@ -4,7 +4,7 @@
     "description": "PHP wrapper to run application in a well defined environment",
     "type": "library",
     "keywords": ["kernel", "runtime", "task", "config"],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "archive": {
         "exclude": [
@@ -34,14 +34,6 @@
     },
     "support": {
         "source": "https://github.com/1stthomas/ht7-kernel"
-    },
-    "dist": {
-        "url": "https://github.com/1stthomas/ht7-kernel/archive/master.zip",
-        "type": "zip"
-    },
-    "source": {
-        "url": "https://github.com/1stthomas/ht7-kernel.git",
-        "type": "git"
     },
     "repositories": [
         {
