@@ -1,5 +1,6 @@
 {
     "name": "ht7/ht7-kernel",
+    "version": "0.1",
     "license": "APACHE 2.0",
     "description": "PHP wrapper to run application in a well defined environment",
     "type": "library",
@@ -34,6 +35,15 @@
     },
     "support": {
         "source": "https://github.com/1stthomas/ht7-kernel"
+    },
+    "dist": {
+        "url": "https://github.com/1stthomas/ht7-kernel/archive/master.zip",
+        "type": "zip"
+    },
+    "source": {
+        "url": "https://github.com/1stthomas/ht7-kernel.git",
+        "type": "git",
+        "reference": "0.1"
     },
     "repositories": [
         {
