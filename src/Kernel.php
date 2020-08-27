@@ -38,7 +38,7 @@ class Kernel
 
     public function boot()
     {
-        $this->setStatus(ProcessStatus::INITIALISED);
+        $this->setStatus(KernelStatus::INITIALISED);
 
         // determine the dir of the index file.
         list($scriptPath) = get_included_files();
