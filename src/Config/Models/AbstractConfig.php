@@ -3,7 +3,6 @@
 namespace Ht7\Kernel\Config\Models;
 
 use \Ht7\Kernel\Config\Models\ConfigModelable;
-use \Ht7\Kernel\Config\Models\ConfigPathType;
 
 /**
  * Description of AbstractConfig
