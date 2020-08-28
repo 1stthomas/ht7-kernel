@@ -3,15 +3,14 @@
 namespace Ht7\Kernel\Utility\Container;
 
 use \Exception;
-use \Ht7\Kernel\Utility\Container\CmsContainerable;
-use \Psr\Container\NotFoundExceptionInterface;
+use \Ht7\Kernel\Utility\Container\AppContainerable;
 
 /**
  * Description of Container
  *
  * @author Thomas Pluess
  */
-class ContainerSimple implements CmsContainerable
+class ContainerSimple implements AppContainerable
 {
 
     protected $bindings;
