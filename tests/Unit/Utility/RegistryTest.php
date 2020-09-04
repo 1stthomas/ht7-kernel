@@ -3,6 +3,7 @@
 namespace Ht7\Kernel\Tests\Utility;
 
 use \PHPUnit\Framework\TestCase;
+use \Ht7\Kernel\Kernel;
 use \Ht7\Kernel\Utility\Registry;
 
 class RegistryTest extends TestCase
@@ -13,31 +14,63 @@ class RegistryTest extends TestCase
         // see: http://miljar.github.io/blog/2013/12/20/phpunit-testing-the-constructor/
         $className = Registry::class;
 
-        $classes = [Registry::class, TestCase::class];
-        $instances = [];
-//        $tagName = 'span';
-//        $content = ['test text'];
-//        $attributes = ['class' => 'btn btn-primary'];
+        $std = new \stdClass();
+        $std->test = 'test1';
+        $items = [Registry::class, TestCase::class, $std];
 
         $mock = $this->getMockBuilder($className)
-                ->setMethods(['setClasses', 'setInstances', 'setData'])
+                ->setMethods(['registerMultiple', 'setData'])
                 ->disableOriginalConstructor()
                 ->getMock();
 
         $mock->expects($this->once())
-                ->method('setClasses')
-                ->with($this->equalTo($classes));
-        $mock->expects($this->once())
-                ->method('setInstances')
-                ->with($this->equalTo($instances));
+                ->method('registerMultiple')
+                ->with($this->equalTo($items));
         $mock->expects($this->once())
                 ->method('setData')
                 ->with($this->equalTo(null));
 
         $reflectedClass = new \ReflectionClass($className);
         $constructor = $reflectedClass->getConstructor();
-        $constructor->invoke($mock, $classes, $instances);
-//        $constructor->invoke($mock, $classes, $instances, $attributes);
+        $constructor->invoke($mock, $items);
+    }
+
+    public function testGet()
+    {
+        $className = Registry::class;
+
+        $std = new \stdClass();
+        $std->test = 'test1';
+
+        $all = [
+            get_class($std) => $std,
+            Registry::class,
+            get_class($this) => $this,
+            Kernel::class,
+        ];
+        $instances = [
+            get_class($std) => $std,
+            get_class($this) => $this
+        ];
+        $classes = [
+            Registry::class,
+            Kernel::class,
+        ];
+
+        $mock = $this->getMockBuilder($className)
+                ->setMethods(['setClasses'])
+                ->disableOriginalConstructor()
+                ->getMock();
+
+        $reflectedClass = new \ReflectionClass($className);
+        $prop = $reflectedClass->getProperty('instances');
+        $prop->setAccessible(true);
+
+        $prop->setValue($mock, $all);
+
+        $this->assertEquals($all, $mock->getAll());
+        $this->assertEquals($classes, $mock->getClasses());
+        $this->assertEquals($instances, $mock->getInstances());
     }
 
 //    public function testConstructor()

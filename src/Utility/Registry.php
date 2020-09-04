@@ -5,7 +5,10 @@ namespace Ht7\Kernel\Utility;
 /**
  * Description of Registry
  *
- * @author Thomas Pluess
+ * @author      Thomas Pluess
+ * @version     0.0.1
+ * @since       0.0.1
+ * @copyright   (c) 2020 Thomas Pluess
  */
 class Registry
 {
@@ -14,10 +17,9 @@ class Registry
     protected $instances;
     protected $instanciated;
 
-    public function __construct(array $classes = [], array $instances = [], $data = null)
+    public function __construct(array $classesOrIinstances = [], $data = null)
     {
-        $this->setClasses($classes);
-        $this->setInstances($instances);
+        $this->registerMultiple($classesOrIinstances);
         $this->setData($data);
     }
 
@@ -40,15 +42,12 @@ class Registry
 
     public function getClasses()
     {
-        return array_map(function($k, $v) {
-            if (is_numeric($k)) {
-                return [$v];
-            } else {
-                return [$k];
-            }
+        return array_filter(
+                $this->instances,
+                function($k) {
+            return is_numeric($k);
         },
-                array_keys($this->instances),
-                $this->instances
+                ARRAY_FILTER_USE_KEY
         );
     }
 
@@ -73,7 +72,8 @@ class Registry
                 function($k) {
             return !is_numeric($k);
         },
-                ARRAY_FILTER_USE_KEY);
+                ARRAY_FILTER_USE_KEY
+        );
     }
 
     public function initialise()
@@ -87,14 +87,18 @@ class Registry
         });
     }
 
-    public function register(string $class)
+    public function register($classOrInstance)
     {
-        $this->instances[] = $class;
+        if (is_string($classOrInstance)) {
+            $this->instances[] = $classOrInstance;
+        } else {
+            $this->instances[get_class($classOrInstance)] = $classOrInstance;
+        }
     }
 
-    public function registerMultiple(array $sanitizers)
+    public function registerMultiple(array $classesOrInstances)
     {
-        array_walk($sanitizers, [$this, 'register']);
+        array_walk($classesOrInstances, [$this, 'register']);
     }
 
     public function setData($data)
