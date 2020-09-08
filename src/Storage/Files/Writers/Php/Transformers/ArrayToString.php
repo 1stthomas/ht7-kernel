@@ -10,20 +10,20 @@ use \Ht7\Kernel\Utility\Values\Sanitizers\SanitizerList;
 /**
  * An instance of this class can transform a PHP array into its string representation.
  *
- * @author Thomas Pluess
+ * @author      Thomas Pluess
+ * @version     0.0.1
+ * @since       0.0.1
  */
 class ArrayToString implements ArrayToStringable
 {
 
     /**
-     *
      * @var     int                 The indent per level of the arrays.
      */
     protected $indent;
 
     /**
-     *
-     * @var     BaseTransformerOptions
+     * @var     BaseTransformerOptions  The tranformation options.
      */
     protected $options;
 
@@ -32,10 +32,16 @@ class ArrayToString implements ArrayToStringable
      */
     protected $sanitizers;
 
+    /**
+     * Create an instance of the <code>ArrayToString</code> transformer class.
+     *
+     * @param   BaseTransformerOptions  $options    The transformation options.
+     * @param   SanitizerList           $sanitizers A list with the sanitizers
+     *                                              to use.
+     */
     public function __construct(BaseTransformerOptions $options, SanitizerList $sanitizers)
     {
         $this->setOptions($options);
-
         $this->setSanitizers($sanitizers);
     }
 
@@ -47,6 +53,11 @@ class ArrayToString implements ArrayToStringable
         return ($addIndent ? $this->getIndentCurrent($level) : '') . '],' . PHP_EOL;
     }
 
+    /**
+     * Create an array arrow.
+     *
+     * @return  string                      The arrow with surrouding spaces.
+     */
     public function createArrow()
     {
         return ' => ';
@@ -105,39 +116,21 @@ class ArrayToString implements ArrayToStringable
         return $line;
     }
 
-    protected function getIndentCurrent(int $level)
-    {
-        $indentString = $this->getIndentString();
-        $indent = '';
-
-        while ($level > 0) {
-            $indent .= $indentString;
-            $level--;
-        }
-
-        return $indent;
-    }
-
-    protected function getIndentString()
-    {
-        if ($this->indent === null) {
-            $this->indent = '';
-            $indentNumber = $this->getOptions()->getIndention();
-
-            while ($indentNumber > 0) {
-                $this->indent .= ' ';
-                $indentNumber--;
-            }
-        }
-
-        return $this->indent;
-    }
-
+    /**
+     * Get the transformation options.
+     *
+     * @return  BaseTransformerOptions      The transformation options.
+     */
     public function getOptions()
     {
         return $this->options;
     }
 
+    /**
+     * Get the sanitizer list.
+     *
+     * @return  SanitizerList               A list with the assigned sanitizers.
+     */
     public function getSanitizers()
     {
         return $this->sanitizers;
@@ -162,24 +155,70 @@ class ArrayToString implements ArrayToStringable
      */
     public function sanitizeValue($value)
     {
-        foreach ($this->getSanitizers() as $sanitizer) {
-            if ($sanitizer->is($value)) {
-                return $sanitizer->sanitize($value);
-            }
-        }
-
-        return $value;
+        return $this->getSanitizers()->sanitize($value);
     }
 
+    /**
+     * Set the transformation options.
+     *
+     * @param   BaseTransformerOptions  $options    The transformation options.
+     * @return  void
+     */
     public function setOptions(BaseTransformerOptions $options)
     {
         $this->options = $options;
         $this->indent = null;
     }
 
+    /**
+     * Set the list with the sanitizers to use.
+     *
+     * @param   SanitizerList   $sanitizers     A list with sanitizer instances
+     *                              To be used during the transformation.
+     * @return  void
+     */
     public function setSanitizers(SanitizerList $sanitizers)
     {
         $this->sanitizers = $sanitizers;
+    }
+
+    /**
+     * Get the indention string of the present code level.
+     *
+     * @param   int     $level      The present code level.
+     * @return  string              The string of the current indention.
+     */
+    protected function getIndentCurrent(int $level)
+    {
+        $indentString = $this->getIndentString();
+        $indent = '';
+
+        while ($level > 0) {
+            $indent .= $indentString;
+            $level--;
+        }
+
+        return $indent;
+    }
+
+    /**
+     * Get the indention string of one code level.
+     *
+     * @return  string                      The indention as a string.
+     */
+    protected function getIndentString()
+    {
+        if ($this->indent === null) {
+            $this->indent = '';
+            $indentNumber = $this->getOptions()->getIndention();
+
+            while ($indentNumber > 0) {
+                $this->indent .= ' ';
+                $indentNumber--;
+            }
+        }
+
+        return $this->indent;
     }
 
 }
