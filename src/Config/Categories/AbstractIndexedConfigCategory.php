@@ -170,7 +170,7 @@ abstract class AbstractIndexedConfigCategory
      * This method calls internally <code>$this->getByConfigPathTypes()</code>.
      *
      * @param   string  $index              The index of the item to get.
-     * @param   int     $configPathType     The config path type which describes
+     * @param   string  $configPathType     The config path type which describes
      *                                      the storage location of the config
      *                                      file. Use one of the constants defined
      *                                      in <code>\Ht7\Kernel\Config\ConfigPathTypes</code>
@@ -180,7 +180,7 @@ abstract class AbstractIndexedConfigCategory
      * @return  mixed                       The found item or the defined default
      *                                      value.
      */
-    public function getByConfigPathType(string $index, int $configPathType, $default = null)
+    public function getByConfigPathType(string $index, string $configPathType, $default = null)
     {
         return $this->getByConfigPathTypes($index, [$configPathType], $default);
     }
@@ -254,7 +254,7 @@ abstract class AbstractIndexedConfigCategory
      * Get the config path type where the present index is locked.
      *
      * @param   string      $index          The index to check.
-     * @return  int|boolean                 The the first config path type where
+     * @return  string|boolean              The the first config path type where
      *                                      the index is locked.
      */
     public function getLockedByConfigPathType(string $index)
@@ -280,7 +280,7 @@ abstract class AbstractIndexedConfigCategory
         return $this->locks;
     }
 
-    public function getLocksByConfigPathType(int $configPathType)
+    public function getLocksByConfigPathType(string $configPathType)
     {
         return isset($this->locks[$configPathType]) ? $this->locks[$configPathType] : [];
     }
@@ -308,7 +308,7 @@ abstract class AbstractIndexedConfigCategory
         return $this->sus;
     }
 
-    public function getSUByConfigPathType(int $configPathType)
+    public function getSUByConfigPathType(string $configPathType)
     {
         foreach ($this->sus as $su) {
             if (is_object($su) && $su->getStorageModel()->getConfigPathType() === $configPathType) {
@@ -376,7 +376,7 @@ abstract class AbstractIndexedConfigCategory
         $this->getLockedByConfigPathType($index) === false ? false : true;
     }
 
-    public function isLockedByConfigPathType($index, int $configPathType)
+    public function isLockedByConfigPathType($index, string $configPathType)
     {
         $locks = $this->getLocksByConfigPathType($configPathType);
 

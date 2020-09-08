@@ -65,11 +65,11 @@ class ConfigLoadingSequence
      * Add a config path type to the loading sequence. It will be added to the
      * <code>self::ADDITIONAL</code> sequence category.
      *
-     * @param   int     $configPathType
+     * @param   string  $configPathType
      * @return  void
      * @throws  RuntimeException
      */
-    public function add(int $configPathType)
+    public function add(string $configPathType)
     {
         if (in_array($configPathType, $this->getSequence())) {
             $e = 'The config path type ' . $configPathType . ' has already been added.';
@@ -136,11 +136,11 @@ class ConfigLoadingSequence
     /**
      * Get the loading sequence from the kernel to the present config path type.
      *
-     * @param   int     $configPathType The limit of the config path type sequence.
+     * @param   string  $configPathType The limit of the config path type sequence.
      * @return  array                   The loading sequence to the present config
      *                                  path type.
      */
-    public function getSequenceTo(int $configPathType)
+    public function getSequenceTo(string $configPathType)
     {
         $sequence = $this->getSequence();
         $i = count($sequence);

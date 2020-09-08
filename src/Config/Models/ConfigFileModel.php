@@ -20,7 +20,7 @@ class ConfigFileModel extends FileModel
     /**
      * The config path type of the present model.
      *
-     * @var     int         One of the constants defined in the
+     * @var     string      One of the constants defined in the
      *                      <code>\Ht7\Kernel\Config\ConfigPathType</code>
      *                      enum.
      */
@@ -31,12 +31,12 @@ class ConfigFileModel extends FileModel
      *
      * @param   string  $name           The file name.
      * @param   string  $dir            The directory to the file on the server.
-     * @param   int     $configPathType The config path type of the present model.
+     * @param   string  $configPathType The config path type of the present model.
      *                                  Use one of the constants defined in the
      *                                  <code>\Ht7\Kernel\Config\ConfigPathType</code>
      *                                  enum.
      */
-    public function __construct(string $name, string $dir, int $configPathType)
+    public function __construct(string $name, string $dir, string $configPathType)
     {
         $this->setConfigPathType($configPathType);
 
@@ -60,12 +60,12 @@ class ConfigFileModel extends FileModel
     /**
      * Set the config path type of the present storage unit.
      *
-     * @param   int     $configPathType The config path type of the present model.
+     * @param   string  $configPathType The config path type of the present model.
      *                                  Use one of the constants defined in the
      *                                  <code>\Ht7\Kernel\Config\ConfigPathType</code>
      *                                  enum.
      */
-    public function setConfigPathType(int $configPathType)
+    public function setConfigPathType(string $configPathType)
     {
         $this->configPathType = $configPathType;
     }

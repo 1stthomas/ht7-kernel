@@ -5,9 +5,11 @@ namespace Ht7\Kernel\Config;
 use \Ht7\Base\Enum;
 
 /**
- * Description of RowTypes
+ * This enum defines all supported config path types.
  *
- * @author Thomas Pluess
+ * @author      Thomas Pluess
+ * @version     0.0.1
+ * @since       0.0.1
  */
 class ConfigPathTypes extends Enum
 {
@@ -15,53 +17,31 @@ class ConfigPathTypes extends Enum
     /**
      * All defined config types.
      */
-    const ALL = 0;
+    const ALL = 'all';
 
     /**
      * The config was read out of the cms structure.
      */
-    const KERNEL = 1;
+    const KERNEL = 'kernel';
 
     /**
      * The config was read out of the app structure.
      */
-    const APP = 2;
+    const APP = 'app';
 
     /**
      * The config was read out of the addon structure.
      */
-    const OVERRIDE = 3;
+    const OVERRIDE = 'override';
 
     /**
      * The config was read out of the addon structure.
      */
-    const CACHE = 4;
+    const CACHE = 'cache';
 
     /**
      * The config was read out of the addon structure.
      */
-    const ADDON = 5;
-
-    /**
-     * The config was read out of the cms structure.
-     */
-    const CMS = 6;
-
-    public static function getAsString(int $constant)
-    {
-        return '' . $constant;
-    }
-
-    public static function getAsStringByName(string $constant)
-    {
-        return self::getAsString(self::getConstant(strtoupper($constant)));
-    }
-
-    public static function getNameByConstant(int $constant)
-    {
-        $names = ['all', 'kernel', 'app', 'override', 'cache', 'addon', 'cms'];
-
-        return $names[$constant];
-    }
+    const ADDON = 'addon';
 
 }
