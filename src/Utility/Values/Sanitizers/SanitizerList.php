@@ -61,6 +61,7 @@ class SanitizerList extends ItemList
      *                              first item has to be the sanitizer and the
      *                              second its flags or an indexed array of
      *                              <code>SanitizerListItem</code> instances.
+     * @codeCoverageIgnore
      */
     public function __construct(array $data = [])
     {
@@ -87,6 +88,15 @@ class SanitizerList extends ItemList
         return parent::add($item);
     }
 
+    /**
+     * Add the sanitizer and the flags individually.
+     *
+     * This method will create internally a <code>SanitizerListItem</code> and
+     * call <code>$this->add($sanitizerListItem)</code>.
+     *
+     * @param   Sanitizerable   $sanitizer      The sanitizer to add.
+     * @param   int|array       $flags          The flags to add.
+     */
     public function addIndividually(Sanitizerable $sanitizer, $flags)
     {
         if (is_array($flags)) {
