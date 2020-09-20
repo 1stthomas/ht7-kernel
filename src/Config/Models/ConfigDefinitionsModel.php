@@ -34,6 +34,7 @@ class ConfigDefinitionsModel extends ArrayDotIndexedModel
      */
     public function __construct(array $all = [])
     {
+        $this->defaults = [];
         $this->definitions = [];
 
         parent::__construct($all);
@@ -70,14 +71,14 @@ class ConfigDefinitionsModel extends ArrayDotIndexedModel
             $defaults = new GenericConfigModel($defaults);
         }
 
-        if ($defaults instanceof GenericConfigModel) {
-            $this->defaults = $defaults;
-        } else {
+        if (!($defaults instanceof GenericConfigModel)) {
             $e = 'The defaults must be an array or an instance of ' . GenericConfigModel::class
                     . ' found ' . (is_object($defaults) ? get_class($defaults) : gettype($defaults));
 
             throw new InvalidArgumentException($e);
         }
+
+        $this->defaults = $defaults;
     }
 
     /**
@@ -91,14 +92,14 @@ class ConfigDefinitionsModel extends ArrayDotIndexedModel
             $definitions = new GenericConfigModel($definitions);
         }
 
-        if ($definitions instanceof GenericConfigModel) {
-            $this->definitions = $definitions;
-        } else {
+        if (!($definitions instanceof GenericConfigModel)) {
             $e = 'The definitions must be an array or an instance of ' . GenericConfigModel::class
                     . ' found ' . (is_object($definitions) ? get_class($definitions) : gettype($definitions));
 
             throw new InvalidArgumentException($e);
         }
+
+        $this->definitions = $definitions;
     }
 
 }
