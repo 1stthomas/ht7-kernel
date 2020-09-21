@@ -28,6 +28,7 @@ class LockList extends HashList
      *
      * @param   LockListType        $item   The config path type specific lock
      *                                      list.
+     * @return  LockList                    The present lock list.
      * @throws  InvalidArgumentException
      */
     public function add($item)
@@ -147,7 +148,6 @@ class LockList extends HashList
      */
     public function getLocksSequence()
     {
-//        return array_reduce($this->getAll(), 'array_merge', []);
         return array_reduce(
                 $this->getAll(),
                 function(array $carry, LockListType $lLT) {
@@ -165,7 +165,7 @@ class LockList extends HashList
      */
     public function isLocked(string $index)
     {
-        $this->getLockedByConfigPathType($index) === false ? false : true;
+        return $this->getLockedByConfigPathType($index) === false ? false : true;
     }
 
     /**
