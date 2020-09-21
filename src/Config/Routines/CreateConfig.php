@@ -3,7 +3,7 @@
 namespace Ht7\Kernel\Config\Routines;
 
 use \Ht7\Kernel\Utility\Routines\AbstractRoutineSubRoutine;
-use \Ht7\Kernel\Config\Routines\SubRoutines\CreateDefaultConfigDefinitions;
+use \Ht7\Kernel\Config\Routines\SubRoutines\CreateConfigDefinitions;
 
 /**
  * Description of CreateConfig
@@ -18,7 +18,7 @@ class CreateConfig extends AbstractRoutineSubRoutine
         parent::__construct(
                 'create_the_config',
                 [
-                    CreateDefaultConfigDefinitions::class,
+                    CreateConfigDefinitions::class,
 //                    CreateDefaultConfigDefinitions::class,
                 ],
                 []
