@@ -9,7 +9,7 @@ use \Ht7\Kernel\Models\ArrayDotIndexedModel;
  *
  * @author Thomas Pluess
  */
-class GenericConfigDefinitionModel extends ArrayDotIndexedModel
+class GenericConfigModel extends ArrayDotIndexedModel
 {
 //    public function __construct(array $all = [])
 //    {

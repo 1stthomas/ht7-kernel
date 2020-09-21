@@ -3,6 +3,7 @@
 namespace Ht7\Kernel\Config\Storage;
 
 use \Ht7\Kernel\Config\Models\ConfigFileModel;
+use \Ht7\Kernel\Config\Models\ConfigDefinitionsModel;
 use \Ht7\Kernel\Export\Files\JsonExport;
 use \Ht7\Kernel\Models\ArrayDotIndexedModel;
 use \Ht7\Kernel\Storage\Files\Bridges\AbstractFileOutBridge;
@@ -119,7 +120,12 @@ class GenericConfigOut extends AbstractFileOutBridge
             default:
                 $configConfig = $this->getDataModel()->getDefinitions();
 
-                $class = $configConfig->get('export.extensions.' . FileExtensions::PHP . '.classes.factory');
+                if ($configConfig instanceof ConfigDefinitionsModel) {
+                    $configConfig = $configConfig->getDefinitions();
+                }
+
+                $class = $configConfig->get('storage.export.extensions.' . FileExtensions::PHP . '.classes.factory');
+
                 $writer = (new $class())->createByConfigDefintionsConfig(
                         $configConfig,
                         $storage->getFilePath(),

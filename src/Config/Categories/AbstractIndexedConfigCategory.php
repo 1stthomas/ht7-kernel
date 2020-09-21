@@ -3,9 +3,13 @@
 namespace Ht7\Kernel\Config\Categories;
 
 use \RuntimeException;
+use \Ht7\Base\Lists\Hashable;
 use \Ht7\Kernel\Config\ConfigPathTypes;
 use \Ht7\Kernel\Config\ConfigLoadingSequence;
+use \Ht7\Kernel\Config\LockList;
 use \Ht7\Kernel\Storage\StorageUnit;
+use \Ht7\Kernel\Config\Storage\ConfigStorageUnit;
+use \Ht7\Kernel\Config\Storage\StorageUnitList;
 
 /**
  * This is the base config category class. It is a container to serve the storage
@@ -19,7 +23,7 @@ use \Ht7\Kernel\Storage\StorageUnit;
  * @version     0.0.1
  * @since       0.0.1
  */
-abstract class AbstractIndexedConfigCategory
+abstract class AbstractIndexedConfigCategory implements Hashable
 {
 
     /**
@@ -50,16 +54,14 @@ abstract class AbstractIndexedConfigCategory
      * All defined locks of this config category. A lock will block later loading
      * configs to override the value.
      *
-     * @var     array               Assoc array of locks separated by their config
-     *                              types. The index are strings of the related
-     *                              config path types.
+     * @var     LockList            A list of <code>LockListType</code>s.
      */
     protected $locks;
 
     /**
-     * This array holds the main components of the present container.
+     * The storage unit list.
      *
-     * @var     array               Indexed array of storage units.
+     * @var     StorageUnitList     A hash list with config storage unit items.
      */
     protected $sus;
 
@@ -86,35 +88,7 @@ abstract class AbstractIndexedConfigCategory
         }
     }
 
-    /**
-     * Add a storage unit to the container.
-     *
-     * @param   StorageUnit     $su         The storage unit to add.
-     * @return  void
-     * @throws RuntimeException
-     */
-    public function add(StorageUnit $su)
-    {
-        if ($this->isLoadedImmediately()) {
-            $su->getIn()->load();
-        }
-
-        $cpt = $su->getStorageModel()->getConfigPathType();
-
-        if (array_key_exists($cpt, $this->sus)) {
-            if (is_object($this->sus[$cpt])) {
-                $e = 'A confg path type: ' . $cpt . ' has already been defined.';
-
-                throw new RuntimeException($e);
-            } else {
-                $this->sus[$cpt] = $su;
-            }
-        } else {
-            $e = 'A config path type: ' . $cpt . ' has not been defined.';
-
-            throw new RuntimeException($e);
-        }
-    }
+    abstract public function initStorageUnits(array $sus);
 
     /**
      * @todo ..!
@@ -147,85 +121,21 @@ abstract class AbstractIndexedConfigCategory
      */
     public function get(string $index, $default = null)
     {
-        $lockedByConfigPathType = $this->getLockedByConfigPathType($index);
+        $configPathTypeMax = $this->getLocks()->getLockedByConfigPathType($index);
 
-        if ($lockedByConfigPathType) {
-//            return $this->getByLevel();
-            return $this->getByConfigPathType($index, $lockedByConfigPathType, $default);
+        if ($configPathTypeMax) {
+            return $this->getStorageUnitList()->getByConfigPathTypeMax($index, $configPathTypeMax, $default);
         }
-
-        /* @var $su StorageUnit */
-        foreach ($this->sus as $su) {
-            if (is_object($su) && $su->getDataModel()->has($index)) {
-                return $su->getDataModel()->get($index);
-            }
-        }
-
-        return $default;
+//
+        return $this->getStorageUnitList()->getByConfigPathTypeMax($index);
     }
 
     /**
-     * Get the item with the specified index of a specific config path type.
-     *
-     * This method calls internally <code>$this->getByConfigPathTypes()</code>.
-     *
-     * @param   string  $index              The index of the item to get.
-     * @param   string  $configPathType     The config path type which describes
-     *                                      the storage location of the config
-     *                                      file. Use one of the constants defined
-     *                                      in <code>\Ht7\Kernel\Config\ConfigPathTypes</code>
-     * @param   mixed   $default            The value, which should be returned,
-     *                                      if there is no item with the present
-     *                                      index.
-     * @return  mixed                       The found item or the defined default
-     *                                      value.
+     * {@inheritdoc}
      */
-    public function getByConfigPathType(string $index, string $configPathType, $default = null)
+    public function getHash()
     {
-        return $this->getByConfigPathTypes($index, [$configPathType], $default);
-    }
-
-    /**
-     * Get the item with the specified index of specific config path types.
-     *
-     * This method calls internally <code>$this->getByConfigPathTypes()</code>.
-     *
-     * @param   string  $index              The index of the item to get.
-     * @param   array   $configPathTypes    The config path type which describes
-     *                                      the storage location of the config
-     *                                      file. Use the constants defined in
-     *                                      <code>\Ht7\Kernel\Config\ConfigPathTypes</code>
-     * @param   mixed   $default            The value, which should be returned,
-     *                                      if there is no item with the present
-     *                                      index.
-     * @return  mixed                       The found item or the defined default
-     *                                      value.
-     */
-    public function getByConfigPathTypes(string $index, array $configPathTypes, $default = null)
-    {
-        /* @var $su StorageUnit */
-        foreach ($this->sus as $su) {
-            if (!is_object($su)) {
-                continue;
-            }
-            if (in_array($su->getStorageModel()->getConfigPathType(), $configPathTypes) && $su->getDataModel()->has($index)) {
-                return $su->getDataModel()->get($index);
-            }
-        }
-
-        return $default;
-    }
-
-    /**
-     * Get the item with the present index, but respect only the present config
-     * path type or those config files, which are loaded before the present one.
-     *
-     * @param   int     $configPathType     The config path type as loading sequence
-     *                                      limit.
-     */
-    public function getByLevel(int $configPathType)
-    {
-
+        return $this->getId();
     }
 
     /**
@@ -251,96 +161,23 @@ abstract class AbstractIndexedConfigCategory
     }
 
     /**
-     * Get the config path type where the present index is locked.
-     *
-     * @param   string      $index          The index to check.
-     * @return  string|boolean              The the first config path type where
-     *                                      the index is locked.
-     */
-    public function getLockedByConfigPathType(string $index)
-    {
-        foreach ($this->getLocks() as $configPathType => $locks) {
-            if (in_array($index, $locks)) {
-                return $configPathType;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Get all defined locks of the present config category.
      *
-     * @return  array                   Assoc array of locks separated by their config
-     *                                  types. The index are integers of the related
-     *                                  config path types.
+     * @return  LockList                A list of <code>LockListType</code> classes.
      */
     public function getLocks()
     {
         return $this->locks;
     }
 
-    public function getLocksByConfigPathType(string $configPathType)
-    {
-        return isset($this->locks[$configPathType]) ? $this->locks[$configPathType] : [];
-    }
-
-    public function getLocksByConfigPathTypes(array $configPathTypes)
-    {
-        $locks = [];
-
-        foreach ($configPathTypes as $type) {
-            $locks[$type] = $this->getLocksByConfigPathType($type);
-        }
-
-        return $locks;
-    }
-
     /**
-     * Get the storage units of this config category.
+     * Get the storage unit list.
      *
-     * @return  array                   The storage units of this config category
-     *                                  as an assoc array with the related config
-     *                                  path types as index.
+     * @return  StorageUnitList
      */
-    public function getSUs()
+    public function getStorageUnitList()
     {
         return $this->sus;
-    }
-
-    public function getSUByConfigPathType(string $configPathType)
-    {
-        foreach ($this->sus as $su) {
-            if (is_object($su) && $su->getStorageModel()->getConfigPathType() === $configPathType) {
-                return $su;
-            }
-        }
-    }
-
-    public function getSUsByConfigPathTypes(array $configPathTypes = [])
-    {
-        $susFiltered = [];
-
-        foreach ($this->sus as $su) {
-            if (is_object($su) && in_array($su->getStorageModel()->getConfigPathType(), $configPathTypes)) {
-                $susFiltered[$su->getStorageModel()->getConfigPathType()] = $su;
-            }
-        }
-
-        return $susFiltered;
-    }
-
-    public function getSUsByConfigPathTypesExcluded(array $configPathTypes = [])
-    {
-        $susFiltered = [];
-
-        foreach ($this->sus as $key => $su) {
-            if (is_object($su) && !in_array($su->getStorageModel()->getConfigPathType(), $configPathTypes)) {
-                $susFiltered[$key] = $su;
-            }
-        }
-
-        return $susFiltered;
     }
 
     /**
@@ -364,38 +201,9 @@ abstract class AbstractIndexedConfigCategory
 //        return false;
     }
 
-    abstract public function initStorageUnits(array $sus);
-
     public function isLoadedImmediately()
     {
         return $this->isLoadedImmediately;
-    }
-
-    public function isLocked($index)
-    {
-        $this->getLockedByConfigPathType($index) === false ? false : true;
-    }
-
-    public function isLockedByConfigPathType($index, string $configPathType)
-    {
-        $locks = $this->getLocksByConfigPathType($configPathType);
-
-        return !empty($locks) && in_array($index, $locks);
-    }
-
-    public function isLockedByConfigPathTypes($index, array $configPathTypes)
-    {
-        return in_array($this->getLockedByConfigPathType($index), $configPathTypes);
-
-//        $locks = $this->getLocksByConfigPathTypes($configPathTypes);
-//
-//        foreach ($configPathTypes as $locks) {
-//            if (in_array($index, $locks)) {
-//                return true;
-//            }
-//        }
-//
-//        return false;
     }
 
     public function rGet(string $index, $default = null)
@@ -438,7 +246,8 @@ abstract class AbstractIndexedConfigCategory
     }
 
     /**
-     * Set all locks of the present config category container.
+     * Set all locks of the present config category container. Using this method
+     * will replace an existing one.
      *
      * @param   array   $locks          Assoc array of locks separated by their
      *                                  config types. The index are integers of
@@ -447,34 +256,19 @@ abstract class AbstractIndexedConfigCategory
      */
     public function setLocks(array $locks)
     {
-        $this->locks = $locks;
-    }
-
-    public function setLocksByConfigPathType(array $locks, int $configPathType)
-    {
-        // @todo: Hier muss noch zu den Kernel Locks gedifft werden!!
-        $this->locks[$configPathType] = $locks;
+        $this->locks = new LockList($locks);
     }
 
     public function createModel(array $values = [])
     {
         // Get the  config model of the kernel config path type.
-        $class = get_class($this->getSUByConfigPathType(ConfigPathTypes::KERNEL)->getDataModel());
+        $class = get_class(
+                $this->getStorageUnitList()
+                        ->get(ConfigPathTypes::KERNEL)
+                        ->getDataModel()
+        );
 
         return new $class($values);
-    }
-
-    protected function initGetKernelSU(array $sus)
-    {
-        for ($i = 0; $i < count($sus); $i++) {
-            if ($sus[$i]->getStorageModel()->getConfigPathType() === ConfigPathTypes::KERNEL) {
-                return $sus[$i];
-            }
-        }
-
-        $e = 'Missing storage unit of the kernel.';
-
-        throw new RuntimeException($e);
     }
 
     /**
@@ -499,7 +293,6 @@ abstract class AbstractIndexedConfigCategory
         $locksAll = $this->getLocks();
 
         if (empty($locksAll)) {
-//        if (!empty($this->locksKernel) || !empty($this->locksApp)) {
             return;
         }
 
@@ -511,7 +304,7 @@ abstract class AbstractIndexedConfigCategory
             $cpts[] = $cpt;
 
             foreach ($locks as $lock) {
-                $model->set($lock, $this->getByConfigPathTypes($lock, $cpts));
+                $model->set($lock, $this->getStorageUnitList()->get($lock, $cpts));
             }
         }
 

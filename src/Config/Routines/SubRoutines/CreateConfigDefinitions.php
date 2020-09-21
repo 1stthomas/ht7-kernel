@@ -3,13 +3,13 @@
 namespace Ht7\Kernel\Config\Routines\SubRoutines;
 
 use \Ht7\Kernel\Container as KernelContainer;
-use \Ht7\Kernel\Config\Categories\ConfigDefinitionsConfigCategory;
+use \Ht7\Kernel\Config\Categories\ConfigDefinitionsCategory;
 use \Ht7\Kernel\Config\Models\ConfigFileModel;
 use \Ht7\Kernel\Config\ConfigPathTypes;
-use \Ht7\Kernel\Config\Models\GenericDotIndexedConfigModel;
+use \Ht7\Kernel\Config\Models\ConfigDefinitionsModel;
 use \Ht7\Kernel\Config\Storage\GenericConfigIn;
 use \Ht7\Kernel\Config\Storage\GenericConfigOut;
-use \Ht7\Kernel\Storage\StorageUnit;
+use \Ht7\Kernel\Config\Storage\ConfigDefinitionsStorageUnit;
 use \Ht7\Kernel\Utility\Routines\AbstractRoutine;
 
 /**
@@ -17,12 +17,12 @@ use \Ht7\Kernel\Utility\Routines\AbstractRoutine;
  *
  * @author Thomas Pluess
  */
-class CreateDefaultConfigDefinitions extends AbstractRoutine
+class CreateConfigDefinitions extends AbstractRoutine
 {
 
     public function __construct(array $args = [])
     {
-        parent::__construct('create_the_default_config_definitions', $args);
+        parent::__construct('create_the_config_definitions', $args);
     }
 
     public function run()
@@ -49,27 +49,22 @@ class CreateDefaultConfigDefinitions extends AbstractRoutine
                     ConfigPathTypes::OVERRIDE
             ),
         ];
-        $classDataModel = GenericDotIndexedConfigModel::class;
+        $classDataModel = ConfigDefinitionsModel::class;
         $classIn = GenericConfigIn::class;
         $classOut = GenericConfigOut::class;
         $sus = [];
 
         foreach ($files as $file) {
-            $su = new StorageUnit((new $classDataModel()), $file, $classIn, $classOut);
-
-            $sus[] = $su;
+            $sus[] = new ConfigDefinitionsStorageUnit(
+                    (new $classDataModel()),
+                    $file,
+                    $classIn,
+                    $classOut
+            );
         }
-        $defsContainer = new ConfigDefinitionsConfigCategory('config_definitions', $sus);
+        $defsContainer = new ConfigDefinitionsCategory('config_definitions', $sus);
 
-        echo "<pre>";
-        print_r($defsContainer->getSUByConfigPathType(ConfigPathTypes::KERNEL)->getDataModel());
-        echo "</pre>";
-        echo "<pre>";
-        print_r($defsContainer->getSUByConfigPathType(ConfigPathTypes::APP)->getDataModel());
-        echo "</pre>";
-        echo "<pre>";
-        print_r($defsContainer->getSUByConfigPathType(ConfigPathTypes::OVERRIDE));
-        echo "</pre>";
+        $container->addPlain('instance.config_definitions', $defsContainer);
     }
 
 }

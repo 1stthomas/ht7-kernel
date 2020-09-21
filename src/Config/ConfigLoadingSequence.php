@@ -22,12 +22,12 @@ class ConfigLoadingSequence
      * The defaults must not be changed. They contian dirs to basic application
      * data of the kernel.
      */
-    public const DEFAULTS = 'defaults';
+    const DEFAULTS = 'defaults';
 
     /**
      * Here must be defined all further loading dirs.
      */
-    public const ADDITIONAL = 'additional';
+    const ADDITIONAL = 'additional';
 
     /**
      * Loading sequence.
@@ -61,38 +61,40 @@ class ConfigLoadingSequence
         }
     }
 
-    /**
-     * Add a config path type to the loading sequence. It will be added to the
-     * <code>self::ADDITIONAL</code> sequence category.
-     *
-     * @param   string  $configPathType
-     * @return  void
-     * @throws  RuntimeException
-     */
-    public function add(string $configPathType)
-    {
-        if (in_array($configPathType, $this->getSequence())) {
-            $e = 'The config path type ' . $configPathType . ' has already been added.';
-
-            throw new RuntimeException($e);
-        }
-
-        $this->sequence['additional'][] = $configPathType;
-    }
-
-    /**
-     * Add multiple config path types to the loading sequence. They will be added
-     * to the <code>self::ADDITIONAL</code> sequence category.
-     *
-     * @param   array   $configPathTypes    An indexed array of config path types.
-     * @return  void
-     */
-    public function addMultiple(array $configPathTypes)
-    {
-        foreach ($configPathTypes as $cpt) {
-            $this->add($cpt);
-        }
-    }
+//
+//    /**
+//     * Add a config path type to the loading sequence. It will be added to the
+//     * <code>self::ADDITIONAL</code> sequence category.
+//     *
+//     * @param   string  $configPathType
+//     * @return  void
+//     * @throws  RuntimeException
+//     */
+//    public function add(array $configPathType)
+////    public function add(string $configPathType)
+//    {
+//        if (in_array($configPathType, $this->getSequence())) {
+//            $e = 'The config path type ' . $configPathType . ' has already been added.';
+//
+//            throw new RuntimeException($e);
+//        }
+//
+//        $this->sequence['additional'][] = $configPathType;
+//    }
+//
+//    /**
+//     * Add multiple config path types to the loading sequence. They will be added
+//     * to the <code>self::ADDITIONAL</code> sequence category.
+//     *
+//     * @param   array   $configPathTypes    An indexed array of config path types.
+//     * @return  void
+//     */
+//    public function addMultiple(array $configPathTypes)
+//    {
+//        foreach ($configPathTypes as $cpt) {
+//            $this->add($cpt);
+//        }
+//    }
 
     /**
      * Get the loading category by index.
@@ -128,8 +130,8 @@ class ConfigLoadingSequence
     public function getSequence()
     {
         return array_merge(
-                $this->sequence[self::DEFAULTS],
-                $this->sequence[self::ADDITIONAL]
+                array_keys($this->sequence[self::DEFAULTS]),
+                array_keys($this->sequence[self::ADDITIONAL])
         );
     }
 
@@ -172,7 +174,7 @@ class ConfigLoadingSequence
             $e = 'The defaults have already been set.';
 
             throw new RuntimeException($e);
-        } elseif ($index === self::ADDITIONAL && !empty(array_intersect($this->get('defaults'), $configPathTypes))) {
+        } elseif ($index === self::ADDITIONAL && !empty(array_intersect(array_keys($this->get('defaults')), array_keys($configPathTypes)))) {
             $e = 'There are duplicated config path types: ' . implode(', ', $configPathTypes) . '.';
 
             throw new RuntimeException($e);
