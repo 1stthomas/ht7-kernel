@@ -3,6 +3,7 @@
 namespace Ht7\Kernel\Config\Storage;
 
 use \Ht7\Base\Lists\Hashable;
+use \Ht7\Kernel\Config\Utility\CanConfigPathTypeHash;
 
 /**
  * The <code>DummyStorageUnit</code> class is needed to represent the loading
@@ -15,10 +16,7 @@ use \Ht7\Base\Lists\Hashable;
 class DummyStorageUnit implements Hashable
 {
 
-    /**
-     * @var     string          The config path type of the present dummy.
-     */
-    protected $configPathType;
+    use CanConfigPathTypeHash;
 
     /**
      * Create an instance of the <code>DummyStorageUnit</code> class.
@@ -28,16 +26,6 @@ class DummyStorageUnit implements Hashable
     public function __construct(string $configPathType)
     {
         $this->configPathType = $configPathType;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @return  string                      The config path type.
-     */
-    public function getHash()
-    {
-        return $this->configPathType;
     }
 
 }

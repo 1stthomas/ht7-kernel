@@ -137,12 +137,12 @@ class StorageUnitList extends HashList
 
     public function getByConfigPathTypesExcluded(array $configPathTypes)
     {
-        return array_filter(
-                $this->getAll(),
-                function($su) use ($configPathTypes) {
-            return $su instanceof ConfigStorageUnit && !in_array($su->getStorageModel()->getConfigPathType(), $configPathTypes);
-        }
-        );
+        return array_values(array_filter(
+                        $this->getAll(),
+                        function($su) use ($configPathTypes) {
+                    return $su instanceof ConfigStorageUnit && !in_array($su->getStorageModel()->getConfigPathType(), $configPathTypes);
+                }
+        ));
     }
 
     /**
@@ -188,22 +188,9 @@ class StorageUnitList extends HashList
      *                                  to get.
      * @return  ConfigStorageUnit       The config specific storage unit.
      */
-    public function getNext(string $cpt)
+    public function getNext($cpt)
     {
-        $keys = array_keys($this->items);
-        $cIndex = array_search($cpt, $keys);
-
-        if ($cIndex === false) {
-            $e = 'Invalid config path type: ' . $cpt;
-
-            throw new InvalidArgumentException($e);
-        } else {
-            if ($cIndex === 0) {
-                return null;
-            } else {
-                return $this->get($keys[$cIndex - 1]);
-            }
-        }
+        return parent::getPrevious($cpt);
     }
 
     /**
@@ -214,22 +201,9 @@ class StorageUnitList extends HashList
      *                                  to get.
      * @return  ConfigStorageUnit       The config specific storage unit.
      */
-    public function getPrevious(string $cpt)
+    public function getPrevious($cpt)
     {
-        $keys = array_keys($this->items);
-        $cIndex = array_search($cpt, $keys);
-
-        if ($cIndex === false) {
-            $e = 'Invalid config path type: ' . $cpt;
-
-            throw new InvalidArgumentException($e);
-        } else {
-            if (count($keys) === ($cIndex + 1)) {
-                return null;
-            } else {
-                return $this->get($keys[$cIndex + 1]);
-            }
-        }
+        return parent::getNext($cpt);
     }
 
 }

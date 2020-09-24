@@ -37,21 +37,4 @@ class LockListTypeTest extends TestCase
         $this->assertEquals(ConfigPathTypes::KERNEL, $property->getValue($mock));
     }
 
-    public function testGetHash()
-    {
-        $className = LockListType::class;
-
-        $mock = $this->getMockBuilder($className)
-                ->setMethods(['load'])
-                ->disableOriginalConstructor()
-                ->getMock();
-
-        $reflectedClass = new ReflectionClass($className);
-        $property = $reflectedClass->getProperty('configPathType');
-        $property->setAccessible(true);
-        $property->setValue($mock, ConfigPathTypes::KERNEL);
-
-        $this->assertEquals(ConfigPathTypes::KERNEL, $property->getValue($mock));
-    }
-
 }

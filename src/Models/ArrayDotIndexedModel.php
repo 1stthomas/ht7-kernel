@@ -28,7 +28,7 @@ class ArrayDotIndexedModel extends ArrayIndexedModel implements ArrayDotIndexabl
     /**
      * {@inheritdoc}
      */
-    public function get($index)
+    public function get(string $index)
     {
         $parts = explode('.', $index);
         $values = $this->getAll();
@@ -63,7 +63,7 @@ class ArrayDotIndexedModel extends ArrayIndexedModel implements ArrayDotIndexabl
     /**
      * {@inheritdoc}
      */
-    public function has($index)
+    public function has(string $index)
     {
         $parts = explode('.', $index);
         $values = $this->getAll();

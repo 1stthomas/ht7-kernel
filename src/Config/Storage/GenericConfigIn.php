@@ -4,7 +4,7 @@ namespace Ht7\Kernel\Config\Storage;
 
 use \InvalidArgumentException;
 use \Ht7\Kernel\Config\Models\ConfigFileModel;
-use \Ht7\Kernel\Models\ArrayDotIndexedModel;
+use \Ht7\Kernel\Config\Models\GenericConfigModel;
 use \Ht7\Kernel\Storage\Files\Bridges\AbstractFileInBridge;
 
 /**
@@ -20,7 +20,7 @@ class GenericConfigIn extends AbstractFileInBridge
     /**
      * {@inheritdoc}
      *
-     * @param   ArrayDotIndexedModel    $dataModel      The data model.
+     * @param   GenericConfigModel      $dataModel      The data model.
      * @param   ConfigFileModel         $storageModel   The storage informations.
      */
     public function __construct($dataModel, ConfigFileModel $storageModel)
@@ -31,12 +31,12 @@ class GenericConfigIn extends AbstractFileInBridge
     /**
      * {@inheritdoc}
      *
-     * @param   ArrayDotIndexedModel    $model  The model with the data.
+     * @param   GenericConfigModel      $model          The model with the data.
      */
     public function setDataModel($model)
     {
-        if (!($model instanceof ArrayDotIndexedModel)) {
-            $e = 'The model has to be an instance of ' . ArrayDotIndexedModel::class
+        if (!($model instanceof GenericConfigModel)) {
+            $e = 'The model has to be an instance of ' . GenericConfigModel::class
                     . ' found ' . (is_object($model) ? get_class($model) : gettype($model)) . '.';
 
             throw new InvalidArgumentException($e);

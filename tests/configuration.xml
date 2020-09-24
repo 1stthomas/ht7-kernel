@@ -32,7 +32,7 @@
                 <directory>../api</directory>
                 <directory>../install</directory>
                 <directory>../vendor</directory>
-                <directory>../src/Config</directory>
+                <directory>../src/Config/Routines</directory>
                 <directory>../src/Exceptions</directory>
                 <directory>../src/Export</directory>
                 <directory>../src/Http</directory>
@@ -46,6 +46,21 @@
                 <file>../src/Kernel.php</file>
                 <file>../src/KernelMode.php</file>
                 <file>../src/KernelStatus.php</file>
+                <file>../src/Config/AbstractResolvableConfig.php</file>
+                <file>../src/Config/Config.php</file>
+                <file>../src/Config/ConfigCached.php</file>
+                <file>../src/Config/ConfigDefinitions.php</file>
+                <file>../src/Config/ConfigPathTypes.php</file>
+                <file>../src/Config/ConfigResolvable.php</file>
+                <file>../src/Config/GenericDottedConfigs.php</file>
+                <file>../src/Config/GenericResolvableConfigs.php</file>
+                <file>../src/Config/Categories/AbstractDotindexedConfigCategory.php</file>
+                <file>../src/Config/Categories/AbstractIndexedConfigCategory.php</file>
+                <file>../src/Config/Categories/ConfigDefinitionsCategory.php</file>
+                <file>../src/Config/Categories/GenericDotIndexedConfigCategory.php</file>
+                <file>../src/Config/Models/ConfigDefinitionsModel.php</file>
+                <file>../src/Config/Models/ConfigFileModel.php</file>
+                <file>../src/Config/Models/GenericConfigModel.php</file>
                 <file>../src/Utility/Container.php</file>
                 <file>../src/Utility/Registry.php</file>
                 <file>../src/Utility/Values/Sanitizers/Sanitizerable.php</file>

@@ -3,7 +3,6 @@
 namespace Ht7\Kernel\Config\Models;
 
 use \InvalidArgumentException;
-use \Ht7\Kernel\Models\ArrayDotIndexedModel;
 use \Ht7\Kernel\Config\Models\GenericConfigModel;
 
 /**
@@ -13,7 +12,7 @@ use \Ht7\Kernel\Config\Models\GenericConfigModel;
  * @version     0.0.1
  * @since       0.0.1
  */
-class ConfigDefinitionsModel extends ArrayDotIndexedModel
+class ConfigDefinitionsModel extends GenericConfigModel
 {
 
     /**

@@ -3,14 +3,14 @@
 namespace Ht7\Kernel\Exceptions;
 
 use \Exception;
-use \Psr\Container\NotFoundExceptionInterface;
+use \Psr\Container\ContainerExceptionInterface;
 
 /**
  * Description of NotFoundException
  *
  * @author Thomas Pluess
  */
-class EntryNotFoundException extends Exception implements NotFoundExceptionInterface
+class ContainerResolvingException extends Exception implements ContainerExceptionInterface
 {
 
 }
